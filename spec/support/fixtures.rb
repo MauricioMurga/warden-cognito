@@ -6,6 +6,7 @@ module Fixtures
   # An user record
   class User
     include Singleton
+    attr_accessor :access_token
 
     def cognito_id
       object_id
@@ -14,8 +15,10 @@ module Fixtures
 
   # User repository
   class UserRepo
-    def self.find_by_cognito_username(_username, _pool_identifier)
-      User.instance
+    def self.find_by_cognito_username(_username, _pool_identifier, access_token)
+      u = User.instance
+      u.access_token = access_token
+      u
     end
 
     def self.find_by_cognito_attribute(_attribute, _pool_identifier)
@@ -26,7 +29,7 @@ module Fixtures
   # User repository that mimics returning a nil user (probably a user that has
   # been deleted)
   class NilUserRepo
-    def self.find_by_cognito_username(_username, _pool_identifier)
+    def self.find_by_cognito_username(_username, _pool_identifier, _access_token)
       nil
     end
 

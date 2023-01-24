@@ -13,6 +13,7 @@ module Warden
       end
 
       def valid?
+        allow_auth_in_root
         cognito_authenticable?
       end
 
@@ -21,7 +22,8 @@ module Warden
 
         return fail(:unknow_cognito_response) unless attempt
 
-        user = local_user || trigger_callback(attempt.authentication_result)
+        access_token = attempt.authentication_result.access_token
+        user = local_user(access_token) || trigger_callback(access_token)
 
         fail!(:unknown_user) unless user.present?
         success!(user)
@@ -37,13 +39,13 @@ module Warden
         CognitoClient.scope pool_identifier
       end
 
-      def trigger_callback(authentication_result)
-        cognito_user = cognito_client.fetch(authentication_result.access_token)
+      def trigger_callback(access_token)
+        cognito_user = cognito_client.fetch(access_token)
         user_not_found_callback.call(cognito_user, cognito_client.pool_identifier)
       end
 
-      def local_user
-        helper.find_by_cognito_username(email, cognito_client.pool_identifier)
+      def local_user(access_token)
+        helper.find_by_cognito_username(email, cognito_client.pool_identifier, access_token)
       end
 
       def cognito_authenticable?
@@ -64,6 +66,13 @@ module Warden
 
       def auth_params
         params[scope.to_s].symbolize_keys.slice(:password, :email, :pool_identifier)
+      end
+
+      # Allow auth params in root
+      def allow_auth_in_root
+        if params[:session] && params[scope.to_s].blank?
+          params[scope.to_s] = params[:session]
+        end
       end
     end
   end

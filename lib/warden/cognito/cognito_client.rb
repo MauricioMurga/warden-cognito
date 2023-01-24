@@ -14,16 +14,42 @@ module Warden
           client_id: user_pool.client_id,
           auth_flow: 'USER_PASSWORD_AUTH',
           auth_parameters: {
-            'USERNAME' => email,
-            'PASSWORD' => password
-          }
+            USERNAME: email,
+            PASSWORD: password
+          }.merge(secret_hash)
         )
       end
 
       private
 
       def client
-        Aws::CognitoIdentityProvider::Client.new region: user_pool.region
+        Aws::CognitoIdentityProvider::Client.new(client_attributes)
+      end
+
+      def client_attributes
+        {
+          region: user_pool.region,
+          stub_responses: testing?,
+          validate_params: !testing?
+        }
+      end
+
+      def testing?
+        environment = ENV['RAILS_ENV'].to_s
+        environment.blank? || environment == 'test'
+      end
+
+      def secret_hash
+        return {} if user_pool.secret.blank?
+        {
+          SECRET_HASH: secret(email)
+        }
+      end
+
+      def secret(username)
+        key = user_pool.secret
+        data = username + user_pool.client_id
+        Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', key, data))
       end
 
       class << self
