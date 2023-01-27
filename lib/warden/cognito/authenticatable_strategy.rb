@@ -22,8 +22,8 @@ module Warden
 
         return fail(:unknow_cognito_response) unless attempt
 
-        access_token = attempt.authentication_result.access_token
-        user = local_user(access_token) || trigger_callback(access_token)
+        user = local_user(attempt.authentication_result) ||
+                 trigger_callback(attempt.authentication_result)
 
         fail!(:unknown_user) unless user.present?
         success!(user)
@@ -39,13 +39,17 @@ module Warden
         CognitoClient.scope pool_identifier
       end
 
-      def trigger_callback(access_token)
-        cognito_user = cognito_client.fetch(access_token)
+      def trigger_callback(auth_result)
+        cognito_user = cognito_client.fetch(auth_result.access_token)
         user_not_found_callback.call(cognito_user, cognito_client.pool_identifier)
       end
 
-      def local_user(access_token)
-        helper.find_by_cognito_username(email, cognito_client.pool_identifier, access_token)
+      def local_user(auth_result)
+        tokens = {
+          access_token: auth_result.access_token,
+          refresh_token: auth_result.refresh_token
+        }
+        helper.find_by_cognito_username(email, cognito_client.pool_identifier, tokens)
       end
 
       def cognito_authenticable?

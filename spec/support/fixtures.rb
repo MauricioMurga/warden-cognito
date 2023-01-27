@@ -6,7 +6,7 @@ module Fixtures
   # An user record
   class User
     include Singleton
-    attr_accessor :access_token
+    attr_accessor :access_token, :refresh_token
 
     def cognito_id
       object_id
@@ -15,9 +15,10 @@ module Fixtures
 
   # User repository
   class UserRepo
-    def self.find_by_cognito_username(_username, _pool_identifier, access_token)
+    def self.find_by_cognito_username(_username, _pool_identifier, tokens)
       u = User.instance
-      u.access_token = access_token
+      u.access_token = tokens[:access_token]
+      u.refresh_token = tokens[:refresh_token]
       u
     end
 
