@@ -20,6 +20,15 @@ module Warden
         )
       end
 
+      def sign_up(email, password)
+        client.sign_up(
+          client_id: user_pool.client_id,
+          username: email,
+          password: password,
+          secret_hash: secret_hash(email)[:SECRET_HASH]
+        )
+      end
+
       private
 
       def client
