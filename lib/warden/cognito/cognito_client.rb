@@ -16,7 +16,7 @@ module Warden
           auth_parameters: {
             USERNAME: email,
             PASSWORD: password
-          }.merge(secret_hash)
+          }.merge(secret_hash(email))
         )
       end
 
@@ -42,7 +42,7 @@ module Warden
         ENV['RAILS_ENV'].to_s
       end
 
-      def secret_hash
+      def secret_hash(email)
         return {} if user_pool.secret.blank?
         {
           SECRET_HASH: secret(email)
