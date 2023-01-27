@@ -35,8 +35,11 @@ module Warden
       end
 
       def testing?
-        environment = ENV['RAILS_ENV'].to_s
         environment.blank? || environment == 'test'
+      end
+
+      def environment
+        ENV['RAILS_ENV'].to_s
       end
 
       def secret_hash
