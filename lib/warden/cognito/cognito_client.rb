@@ -29,6 +29,24 @@ module Warden
         )
       end
 
+      def refresh_token(username, refresh_token)
+        client.initiate_auth(
+          client_id: user_pool.client_id,
+          auth_flow: 'REFRESH_TOKEN_AUTH',
+          auth_parameters: {
+            REFRESH_TOKEN: refresh_token
+          }.merge(secret_hash(username))
+        )
+      end
+
+      def revoke_token(refresh_token)
+        client.revoke_token(
+          token: refresh_token,
+          client_id: user_pool.client_id,
+          client_secret: user_pool.secret
+        )
+      end
+
       private
 
       def client

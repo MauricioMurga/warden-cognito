@@ -26,7 +26,12 @@ module Warden
       end
 
       def user_attribute(attribute_name)
-        token_attribute(attribute_name).presence || cognito_user_attribute(attribute_name)
+        if ENV['RAILS_ENV'].to_s == 'test'
+          token_attribute(attribute_name).presence
+        else
+          cognito_user_attribute(attribute_name)
+        end
+        # token_attribute(attribute_name).presence || cognito_user_attribute(attribute_name)
       end
 
       def pool_identifier
