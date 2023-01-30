@@ -29,6 +29,8 @@ module Warden
         success!(user)
       rescue Aws::CognitoIdentityProvider::Errors::NotAuthorizedException
         fail!(:invalid_login)
+      rescue Aws::CognitoIdentityProvider::Errors::UserNotConfirmedException
+        fail(:user_is_not_confirmed)
       rescue StandardError
         fail(:unknow_cognito_response)
       end
