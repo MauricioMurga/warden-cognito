@@ -66,6 +66,14 @@ module Warden
         )
       end
 
+      def verify_email(code, access_token)
+        client.verify_user_attribute(
+          access_token: access_token,
+          attribute_name: "email",
+          code: code
+        )
+      end
+
       private
 
       def client
