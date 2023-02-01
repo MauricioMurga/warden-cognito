@@ -9,23 +9,23 @@ module Warden
         client.get_user(access_token: access_token)
       end
 
-      def initiate_auth(email, password)
+      def initiate_auth(username, password)
         client.initiate_auth(
           client_id: user_pool.client_id,
           auth_flow: 'USER_PASSWORD_AUTH',
           auth_parameters: {
-            USERNAME: email,
+            USERNAME: username,
             PASSWORD: password
-          }.merge(secret_hash(email))
+          }.merge(secret_hash(username))
         )
       end
 
-      def sign_up(email, password)
+      def sign_up(username, password)
         client.sign_up(
           client_id: user_pool.client_id,
-          username: email,
+          username: username,
           password: password,
-          secret_hash: secret_hash(email)[:SECRET_HASH]
+          secret_hash: secret_hash(username)[:SECRET_HASH]
         )
       end
 
@@ -44,6 +44,25 @@ module Warden
           token: refresh_token,
           client_id: user_pool.client_id,
           client_secret: user_pool.secret
+        )
+      end
+
+      def update_email(email, access_token)
+        client.update_user_attributes(
+          access_token: access_token,
+          user_attributes: [
+            {
+              name: "email",
+              value: email
+            }
+        ])
+      end
+
+      def change_password(passwords, access_token)
+        client.change_password(
+          previous_password: passwords[:current_password],
+          proposed_password: passwords[:password],
+          access_token: access_token
         )
       end
 

@@ -14,7 +14,8 @@ module Warden
       end
 
       def valid?
-        token_decoder.validate!
+        true
+        # token_decoder.validate!
       rescue ::JWT::ExpiredSignature
         true
       rescue StandardError
@@ -28,6 +29,8 @@ module Warden
         success!(user)
       rescue ::JWT::ExpiredSignature
         fail!(:token_expired)
+      rescue JWT::InvalidIssuerError
+        fail(:invalid)
       rescue StandardError
         fail(:unknown_error)
       end

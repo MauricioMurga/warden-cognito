@@ -25,12 +25,15 @@ module Warden
         user = local_user(attempt.authentication_result) ||
                  trigger_callback(attempt.authentication_result)
 
-        fail!(:unknown_user) unless user.present?
-        success!(user)
+        if user.present?
+          success!(user)
+        else
+          fail!(:invalid)
+        end
       rescue Aws::CognitoIdentityProvider::Errors::NotAuthorizedException
-        fail!(:invalid_login)
+        fail!(:invalid)
       rescue Aws::CognitoIdentityProvider::Errors::UserNotConfirmedException
-        fail(:user_is_not_confirmed)
+        fail!(:unconfirmed)
       rescue StandardError
         fail(:unknow_cognito_response)
       end
