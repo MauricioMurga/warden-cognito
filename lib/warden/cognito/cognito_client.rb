@@ -74,7 +74,8 @@ module Warden
         )
       end
 
-      def send_verification_code(access_token)
+      # Sends verification code for current email
+      def send_email_verification_code(access_token)
         client.get_user_attribute_verification_code(
           access_token: access_token,
           attribute_name: "email"
