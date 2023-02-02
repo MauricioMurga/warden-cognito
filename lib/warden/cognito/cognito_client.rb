@@ -81,6 +81,24 @@ module Warden
         )
       end
 
+      def fogot_password(username)
+        client.forgot_password(
+          client_id: user_pool.client_id,
+          secret_hash: secret(username),
+          username: username
+        )
+      end
+
+      def confirm_password(username, new_password, code)
+        client.confirm_forgot_password({
+          client_id: user_pool.client_id,
+          secret_hash: secret(username),
+          username: username,
+          confirmation_code: code,
+          password: new_password
+        })
+      end
+
       private
 
       def client
