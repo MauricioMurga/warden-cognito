@@ -70,7 +70,14 @@ module Warden
         client.verify_user_attribute(
           access_token: access_token,
           attribute_name: "email",
-          code: code
+          code: code.to_s
+        )
+      end
+
+      def send_verification_code(access_token)
+        client.get_user_attribute_verification_code(
+          access_token: access_token,
+          attribute_name: "email"
         )
       end
 
@@ -81,11 +88,18 @@ module Warden
       end
 
       def client_attributes
-        {
+        attributes = {
           region: user_pool.region,
           stub_responses: testing?,
           validate_params: !testing?
         }
+        if ENV['COGNITO_ACCESS_KEY_ID'] && ENV['COGNITO_SECRET_ACCESS_KEY']
+          attributes.merge!(
+            access_key_id: ENV['COGNITO_ACCESS_KEY_ID'],
+            secret_access_key: ENV['COGNITO_SECRET_ACCESS_KEY']
+          )
+        end
+        attributes
       end
 
       def testing?
