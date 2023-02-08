@@ -64,10 +64,10 @@ module Warden
         ])
       end
 
-      def change_password(passwords, access_token)
+      def change_password(current_password, password, access_token)
         client.change_password(
-          previous_password: passwords[:current_password].to_s,
-          proposed_password: passwords[:password].to_s,
+          previous_password: current_password.to_s,
+          proposed_password: password.to_s,
           access_token: access_token.to_s
         )
       end
@@ -88,7 +88,7 @@ module Warden
         )
       end
 
-      def fogot_password(username)
+      def forgot_password(username)
         client.forgot_password(
           client_id: user_pool.client_id,
           secret_hash: secret(username),
@@ -104,6 +104,18 @@ module Warden
           confirmation_code: code.to_s,
           password: password.to_s
         })
+      end
+
+      def update_email_verification(username, email_verified)
+        client.admin_update_user_attributes(
+          user_pool_id: user_pool.pool_id,
+          username: username,
+          user_attributes: [
+            {
+              name: "email_verified",
+              value: email_verified.to_s,
+            }
+        ])
       end
 
       private
