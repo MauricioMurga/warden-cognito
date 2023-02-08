@@ -14,8 +14,8 @@ module Warden
           client_id: user_pool.client_id,
           auth_flow: 'USER_PASSWORD_AUTH',
           auth_parameters: {
-            USERNAME: username,
-            PASSWORD: password
+            USERNAME: username.to_s,
+            PASSWORD: password.to_s
           }.merge(secret_hash(username))
         )
       end
@@ -23,8 +23,8 @@ module Warden
       def sign_up(username, password)
         client.sign_up(
           client_id: user_pool.client_id,
-          username: username,
-          password: password,
+          username: username.to_s,
+          password: password.to_s,
           secret_hash: secret_hash(username)[:SECRET_HASH]
         )
       end
@@ -34,41 +34,47 @@ module Warden
           client_id: user_pool.client_id,
           auth_flow: 'REFRESH_TOKEN_AUTH',
           auth_parameters: {
-            REFRESH_TOKEN: refresh_token
+            REFRESH_TOKEN: refresh_token.to_s
           }.merge(secret_hash(username))
         )
       end
 
       def revoke_token(refresh_token)
         client.revoke_token(
-          token: refresh_token,
+          token: refresh_token.to_s,
           client_id: user_pool.client_id,
           client_secret: user_pool.secret
         )
       end
 
+       def sign_out(access_token)
+        client.global_sign_out(
+          access_token: access_token.to_s
+        )
+      end
+
       def update_email(email, access_token)
         client.update_user_attributes(
-          access_token: access_token,
+          access_token: access_token.to_s,
           user_attributes: [
             {
               name: "email",
-              value: email
+              value: email.to_s
             }
         ])
       end
 
       def change_password(passwords, access_token)
         client.change_password(
-          previous_password: passwords[:current_password],
-          proposed_password: passwords[:password],
-          access_token: access_token
+          previous_password: passwords[:current_password].to_s,
+          proposed_password: passwords[:password].to_s,
+          access_token: access_token.to_s
         )
       end
 
       def verify_email(code, access_token)
         client.verify_user_attribute(
-          access_token: access_token,
+          access_token: access_token.to_s,
           attribute_name: "email",
           code: code.to_s
         )
@@ -77,7 +83,7 @@ module Warden
       # Sends verification code for current email
       def send_email_verification_code(access_token)
         client.get_user_attribute_verification_code(
-          access_token: access_token,
+          access_token: access_token.to_s,
           attribute_name: "email"
         )
       end
@@ -86,7 +92,7 @@ module Warden
         client.forgot_password(
           client_id: user_pool.client_id,
           secret_hash: secret(username),
-          username: username
+          username: username.to_s
         )
       end
 
@@ -94,9 +100,9 @@ module Warden
         client.confirm_forgot_password({
           client_id: user_pool.client_id,
           secret_hash: secret(username),
-          username: username,
-          confirmation_code: code,
-          password: password
+          username: username.to_s,
+          confirmation_code: code.to_s,
+          password: password.to_s
         })
       end
 
@@ -138,7 +144,7 @@ module Warden
 
       def secret(username)
         key = user_pool.secret
-        data = username + user_pool.client_id
+        data = username.to_s + user_pool.client_id
         Base64.strict_encode64(OpenSSL::HMAC.digest('sha256', key, data))
       end
 
