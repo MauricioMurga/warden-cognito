@@ -23,7 +23,7 @@ module Warden
     end
 
     def user_pool_configuration_keys
-      %i[identifier region pool_id client_id secret]
+      %i[identifier region pool_id client_id secret access_key_id secret_access_key]
     end
 
     def user_pool_configurations(value)

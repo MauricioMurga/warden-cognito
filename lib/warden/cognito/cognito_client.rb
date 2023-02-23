@@ -130,10 +130,10 @@ module Warden
           stub_responses: testing?,
           validate_params: !testing?
         }
-        if ENV['COGNITO_ACCESS_KEY_ID'] && ENV['COGNITO_SECRET_ACCESS_KEY']
+        if user_pool.access_key_id && user_pool.secret_access_key
           attributes.merge!(
-            access_key_id: ENV['COGNITO_ACCESS_KEY_ID'],
-            secret_access_key: ENV['COGNITO_SECRET_ACCESS_KEY']
+            access_key_id: user_pool.access_key_id,
+            secret_access_key: user_pool.secret_access_key
           )
         end
         attributes

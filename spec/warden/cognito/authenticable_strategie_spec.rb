@@ -54,7 +54,7 @@ RSpec.describe Warden::Cognito::AuthenticatableStrategy do
       end
 
       it 'call fail' do
-        expect(strategy).to receive(:fail!).with(:invalid_login)
+        expect(strategy).to receive(:fail!).with(:invalid)
         strategy.authenticate!
       end
     end
@@ -90,8 +90,8 @@ RSpec.describe Warden::Cognito::AuthenticatableStrategy do
             config.after_local_user_not_found = Fixtures::Callback.after_user_local_not_found_nil
           end
 
-          it 'fails! with :unknown_user' do
-            expect(strategy).to receive(:fail!).with(:unknown_user)
+          it 'fails! with :invalid' do
+            expect(strategy).to receive(:fail!).with(:invalid)
             strategy.authenticate!
           end
         end

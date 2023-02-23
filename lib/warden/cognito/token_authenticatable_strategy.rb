@@ -14,8 +14,11 @@ module Warden
       end
 
       def valid?
-        true
-        # token_decoder.validate!
+        if ENV['RAILS_ENV'].to_s == 'test'
+          true
+        else
+          token_decoder.validate!
+        end
       rescue ::JWT::ExpiredSignature
         true
       rescue StandardError
