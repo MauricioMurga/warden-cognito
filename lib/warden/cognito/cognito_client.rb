@@ -9,6 +9,13 @@ module Warden
         client.get_user(access_token: access_token)
       end
 
+      def delete_user(username)
+        client.admin_delete_user(
+          user_pool_id: user_pool.pool_id,
+          username: username
+        )
+      end
+
       def initiate_auth(username, password)
         client.initiate_auth(
           client_id: user_pool.client_id,
