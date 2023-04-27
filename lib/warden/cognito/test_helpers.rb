@@ -13,8 +13,8 @@ module Warden
         end
 
         def auth_headers(headers, user, pool_identifier = Warden::Cognito.config.user_pools.first.identifier,
-                         claims = {})
-          headers.merge(Authorization: "Bearer #{generate_token(user, pool_identifier, claims)}")
+                         client_id = Warden::Cognito.config.user_pools.first.client_id, claims = {})
+          headers.merge(Authorization: "Bearer #{generate_token(user, pool_identifier, client_id, claims)}")
         end
 
         def local_issuer
@@ -23,8 +23,9 @@ module Warden
 
         private
 
-        def generate_token(user, pool_identifier, claims = {})
+        def generate_token(user, pool_identifier, client_id, claims = {})
           payload = {
+            client_id: client_id,
             sub: user.object_id,
             "#{identifying_attribute}": user.cognito_id,
             iss: "#{pool_identifier}-#{local_issuer}",
