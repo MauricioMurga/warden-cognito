@@ -14,7 +14,7 @@ module Warden
       end
 
       def call(token_decoder)
-        helper.find_by_cognito_attribute local_identifier(token_decoder), token_decoder.pool_identifier
+        helper.find_by_cognito_attribute local_identifier(token_decoder), token_decoder.pool_identifier, token_decoder.token
       end
 
       private

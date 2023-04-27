@@ -22,7 +22,7 @@ module Fixtures
       u
     end
 
-    def self.find_by_cognito_attribute(_attribute, _pool_identifier)
+    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token)
       User.instance
     end
   end
@@ -34,7 +34,7 @@ module Fixtures
       nil
     end
 
-    def self.find_by_cognito_attribute(_attribute, _pool_identifier)
+    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token)
       nil
     end
   end

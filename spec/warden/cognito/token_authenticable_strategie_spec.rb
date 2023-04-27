@@ -123,7 +123,7 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
       context 'referencing an existing (local) user' do
         it 'succeeds with the user instance' do
           expect(config.user_repository).to receive(:find_by_cognito_attribute).with(local_identifier,
-                                                                                     pool_identifier).and_call_original
+                                                                                     pool_identifier, jwt_token).and_call_original
           expect(strategy).to receive(:success!).with(user)
           strategy.authenticate!
         end
