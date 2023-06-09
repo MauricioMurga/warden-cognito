@@ -89,9 +89,16 @@ module Warden
 
       # Sends verification code for current email
       def send_email_verification_code(access_token)
+        subdomain = ""
+        subdomain = "test." if staging?
+        url = "https://api.#{subdomain}enumma.com/users/verify_email?access_token=#{access_token}"
+        url = "http://localhost:3000/users/verify_email?access_token=#{access_token}" if development?
         client.get_user_attribute_verification_code(
           access_token: access_token.to_s,
-          attribute_name: "email"
+          attribute_name: "email",
+          client_metadata: {
+            "url" => url
+          }
         )
       end
 
@@ -148,6 +155,18 @@ module Warden
 
       def testing?
         environment.blank? || environment == 'test'
+      end
+
+      def development?
+        environment == 'development'
+      end
+
+      def staging?
+        environment == 'staging'
+      end
+
+      def production?
+        environment == 'production'
       end
 
       def environment
