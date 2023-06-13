@@ -91,8 +91,8 @@ module Warden
       def send_email_verification_code(access_token)
         subdomain = ""
         subdomain = "test." if staging?
-        url = "https://api.#{subdomain}enumma.com/users/verify_email?access_token=#{access_token}"
-        url = "http://localhost:3000/users/verify_email?access_token=#{access_token}" if development?
+        url = "https://app.#{subdomain}enumma.com/verify-email?access_token=#{access_token}"
+        url = "http://localhost:3001/verify-email?access_token=#{access_token}" if development?
         client.get_user_attribute_verification_code(
           access_token: access_token.to_s,
           attribute_name: "email",
