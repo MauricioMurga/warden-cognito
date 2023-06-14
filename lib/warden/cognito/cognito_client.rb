@@ -120,6 +120,15 @@ module Warden
         })
       end
 
+      def set_user_password(username, password)
+        client.admin_set_user_password({
+          user_pool_id: user_pool.pool_id,
+          username: username.to_s,
+          password: password.to_s,
+          permanent: true
+        })
+      end
+
       def update_email_verification(username, email_verified)
         client.admin_update_user_attributes(
           user_pool_id: user_pool.pool_id,
