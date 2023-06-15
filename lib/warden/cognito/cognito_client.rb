@@ -141,6 +141,24 @@ module Warden
         ])
       end
 
+      def delete_user(email)
+        resp = client.list_users({
+          user_pool_id: user_pool.pool_id,
+          attributes_to_get: ["email"],
+          limit: 50
+        })
+        h = resp.to_h
+        users = h.first.second
+        user = users.find{ |u| u[:attributes].first[:value] == email }
+        if user
+          username = user[:username]
+          client.admin_delete_user({
+            user_pool_id: user_pool.pool_id,
+            username: username
+          })
+        end
+      end
+
       private
 
       def client
