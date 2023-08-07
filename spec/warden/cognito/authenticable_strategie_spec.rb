@@ -43,6 +43,7 @@ RSpec.describe Warden::Cognito::AuthenticatableStrategy do
     let(:authentication_result) { double 'AuthenticationResult' }
     let(:access_token) { 'ejXxXxX' }
     let(:refresh_token) { 'ej2XxXxX' }
+    let(:expires_in) { 0 }
 
     before do
       allow(Aws::CognitoIdentityProvider::Client).to receive(:new).and_return client
@@ -65,6 +66,7 @@ RSpec.describe Warden::Cognito::AuthenticatableStrategy do
         allow(initiate_auth_response).to receive(:authentication_result).and_return(authentication_result)
         allow(authentication_result).to receive(:access_token).and_return(access_token)
         allow(authentication_result).to receive(:refresh_token).and_return(refresh_token)
+        allow(authentication_result).to receive(:expires_in).and_return(refresh_token)
       end
 
       context 'with existing local user' do
@@ -141,6 +143,7 @@ RSpec.describe Warden::Cognito::AuthenticatableStrategy do
           allow(initiate_auth_response).to receive(:authentication_result).and_return(authentication_result)
           allow(authentication_result).to receive(:access_token).and_return(access_token)
           allow(authentication_result).to receive(:refresh_token).and_return(refresh_token)
+          allow(authentication_result).to receive(:expires_in).and_return(expires_in)
         end
 
         context 'with existing local user' do

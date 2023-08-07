@@ -52,7 +52,8 @@ module Warden
       def local_user(auth_result)
         tokens = {
           access_token: auth_result.access_token,
-          refresh_token: auth_result.refresh_token
+          refresh_token: auth_result.refresh_token,
+          expires_at: auth_result.expires_in.to_i + Time.now.to_i
         }
         helper.find_by_cognito_username(email, cognito_client.pool_identifier, tokens)
       end

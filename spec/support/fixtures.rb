@@ -6,7 +6,7 @@ module Fixtures
   # An user record
   class User
     include Singleton
-    attr_accessor :access_token, :refresh_token
+    attr_accessor :access_token, :refresh_token, :expires_at
 
     def cognito_id
       object_id
@@ -19,10 +19,11 @@ module Fixtures
       u = User.instance
       u.access_token = tokens[:access_token]
       u.refresh_token = tokens[:refresh_token]
+      u.expires_at = tokens[:expires_at]
       u
     end
 
-    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token)
+    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token, _expires_at)
       User.instance
     end
   end
@@ -34,7 +35,7 @@ module Fixtures
       nil
     end
 
-    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token)
+    def self.find_by_cognito_attribute(_attribute, _pool_identifier, _access_token, _expires_at)
       nil
     end
   end

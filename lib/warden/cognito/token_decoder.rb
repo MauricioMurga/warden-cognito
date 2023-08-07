@@ -16,6 +16,10 @@ module Warden
         decoded_token.first['sub']
       end
 
+      def expires_at
+        decoded_token.first['exp'].to_i + Time.now.to_i
+      end
+
       def decoded_token
         @decoded_token ||= ::JWT.decode(token, nil, true, iss: jwk_loader.jwt_issuer, verify_iss: true,
                                                           algorithms: ['RS256'], jwks: jwk_loader)

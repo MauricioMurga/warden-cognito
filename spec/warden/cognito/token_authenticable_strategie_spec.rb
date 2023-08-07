@@ -6,6 +6,7 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
   include_context 'configuration'
 
   let(:jwt_token) { 'FakeJwtToken' }
+  let(:expires_at) { Time.now.to_i }
   let(:authorization_header) { { 'HTTP_AUTHORIZATION' => "Bearer #{jwt_token}" } }
   let(:headers) { authorization_header }
   let(:path) { '/v1/resource' }
@@ -39,7 +40,7 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
     context 'with a token issued by another entity' do
       before { allow(JWT).to receive(:decode).with(jwt_token, nil, true, any_args).and_raise(JWT::InvalidIssuerError) }
 
-      it 'returns false' do
+      it '< false' do
         expect(strategy.valid?).to be_falsey
       end
     end
@@ -123,7 +124,7 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
       context 'referencing an existing (local) user' do
         it 'succeeds with the user instance' do
           expect(config.user_repository).to receive(:find_by_cognito_attribute).with(local_identifier,
-                                                                                     pool_identifier, jwt_token).and_call_original
+                                                                                     pool_identifier, jwt_token, expires_at).and_call_original
           expect(strategy).to receive(:success!).with(user)
           strategy.authenticate!
         end
