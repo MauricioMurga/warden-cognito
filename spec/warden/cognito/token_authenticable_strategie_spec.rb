@@ -6,7 +6,7 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
   include_context 'configuration'
 
   let(:jwt_token) { 'FakeJwtToken' }
-  let(:expires_at) { Time.now.to_i }
+  let(:expires_at) { 1691428702 }
   let(:authorization_header) { { 'HTTP_AUTHORIZATION' => "Bearer #{jwt_token}" } }
   let(:headers) { authorization_header }
   let(:path) { '/v1/resource' }
@@ -16,7 +16,8 @@ RSpec.describe Warden::Cognito::TokenAuthenticatableStrategy do
     [
       {
         'sub' => 'CognitoUserId',
-        'iss' => issuer
+        'iss' => issuer,
+        'exp' => 1691428702
       }
     ]
   end

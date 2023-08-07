@@ -17,7 +17,7 @@ module Warden
       end
 
       def expires_at
-        decoded_token.first['exp'].to_i + Time.now.to_i
+        decoded_token.first['exp'].to_i
       end
 
       def decoded_token
