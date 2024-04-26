@@ -12,3 +12,7 @@
 
 Gemfile.lock
 .byebug_history
+.DS_Store
+.ruby-version
+.ruby-gemset
+.vscode/
