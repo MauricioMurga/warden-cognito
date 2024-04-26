@@ -23,7 +23,7 @@ module Warden
         return fail(:unknow_cognito_response) unless attempt
 
         user = local_user(attempt.authentication_result) ||
-                 trigger_callback(attempt.authentication_result)
+               trigger_callback(attempt.authentication_result)
 
         if user.present?
           success!(user)
@@ -80,9 +80,9 @@ module Warden
 
       # Allow auth params in root
       def allow_auth_in_root
-        if params[:session] && params[scope.to_s].blank?
-          params[scope.to_s] = params[:session]
-        end
+        return unless params[:session] && params[scope.to_s].blank?
+
+        params[scope.to_s] = params[:session]
       end
     end
   end

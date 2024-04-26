@@ -1,6 +1,6 @@
 module Warden
   module Cognito
-    class CognitoClient
+    class CognitoClient # rubocop:disable Metrics/ClassLength
       include Cognito::Import['user_pools']
       include HasUserPoolIdentifier
 
@@ -9,7 +9,7 @@ module Warden
         client.get_user(access_token: access_token)
       end
 
-      def delete_user(username)
+      def delete_user_by_username(username)
         client.admin_delete_user(
           user_pool_id: user_pool.pool_id,
           username: username
@@ -54,21 +54,18 @@ module Warden
         )
       end
 
-       def sign_out(access_token)
-        client.global_sign_out(
-          access_token: access_token.to_s
-        )
+      def sign_out(access_token)
+        client.global_sign_out(access_token: access_token.to_s)
       end
 
       def update_email(email, access_token)
         client.update_user_attributes(
           access_token: access_token.to_s,
-          user_attributes: [
-            {
-              name: "email",
-              value: email.to_s
-            }
-        ])
+          user_attributes: [{
+            name: 'email',
+            value: email.to_s
+          }]
+        )
       end
 
       def change_password(current_password, password, access_token)
@@ -82,22 +79,22 @@ module Warden
       def verify_email(code, access_token)
         client.verify_user_attribute(
           access_token: access_token.to_s,
-          attribute_name: "email",
+          attribute_name: 'email',
           code: code.to_s
         )
       end
 
       # Sends verification code for current email
       def send_email_verification_code(access_token)
-        subdomain = ""
-        subdomain = "test." if staging?
+        subdomain = ''
+        subdomain = 'test.' if staging?
         url = "https://app.#{subdomain}enumma.com/verify-email?access_token=#{access_token}"
         url = "http://localhost:3001/verify-email?access_token=#{access_token}" if development?
         client.get_user_attribute_verification_code(
           access_token: access_token.to_s,
-          attribute_name: "email",
+          attribute_name: 'email',
           client_metadata: {
-            "url" => url
+            'url' => url
           }
         )
       end
@@ -111,52 +108,50 @@ module Warden
       end
 
       def confirm_password(username, password, code)
-        client.confirm_forgot_password({
+        client.confirm_forgot_password(
           client_id: user_pool.client_id,
           secret_hash: secret(username),
           username: username.to_s,
           confirmation_code: code.to_s,
           password: password.to_s
-        })
+        )
       end
 
       def set_user_password(username, password)
-        client.admin_set_user_password({
+        client.admin_set_user_password(
           user_pool_id: user_pool.pool_id,
           username: username.to_s,
           password: password.to_s,
           permanent: true
-        })
+        )
       end
 
       def update_email_verification(username, email_verified)
         client.admin_update_user_attributes(
           user_pool_id: user_pool.pool_id,
           username: username,
-          user_attributes: [
-            {
-              name: "email_verified",
-              value: email_verified.to_s,
-            }
-        ])
+          user_attributes: [{
+            name: 'email_verified',
+            value: email_verified.to_s
+          }]
+        )
       end
 
-      def delete_user(email)
-        resp = client.list_users({
+      def get_user_by_email(email)
+        resp = client.list_users(
           user_pool_id: user_pool.pool_id,
-          attributes_to_get: ["email"],
-          limit: 50
-        })
-        h = resp.to_h
-        users = h.first.second
-        user = users.find{ |u| u[:attributes].first[:value] == email }
-        if user
-          username = user[:username]
-          client.admin_delete_user({
-            user_pool_id: user_pool.pool_id,
-            username: username
-          })
-        end
+          attributes_to_get: ['email'],
+          filter: "\"email\"^=\"#{email}\"",
+          limit: 1
+        )
+        resp.users.first
+      end
+
+      def delete_user_by_email(email)
+        user = get_user_by_email(email)
+        return unless user
+
+        delete_user_by_username(user[:username])
       end
 
       private
@@ -202,6 +197,7 @@ module Warden
 
       def secret_hash(email)
         return {} if user_pool.secret.blank?
+
         {
           SECRET_HASH: secret(email)
         }

@@ -9,7 +9,7 @@ RSpec.describe Warden::Cognito::TokenDecoder do
       {
         'sub' => 'CognitoUserId',
         'iss' => issuer,
-        'exp' => 1691428702
+        'exp' => 1_691_428_702
       }
     ]
   end
